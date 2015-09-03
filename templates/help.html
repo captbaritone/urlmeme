@@ -1,0 +1,128 @@
+<html>
+<head>
+    <style>
+input {
+    background-color: #fff;
+    border-color: -moz-use-text-color -moz-use-text-color #e2e2e2;
+    border-width: 1px;
+    color: #000;
+    font-size: 12px;
+    margin: 0 .4em;
+    letter-spacing: normal;
+    outline-style: none;
+    padding: .4em 0;
+    text-indent: 0.25em;
+    width: 14em;
+}
+body {
+    text-align: center;
+    font-family: sans-serif;
+    color: #929292;
+}
+.url {
+    margin: 0 auto;
+    display: inline-block;
+    margin: 50px;
+    font-size: 20px;
+}
+
+.url .field {
+    display: inline-block;
+}
+.url .field label {
+    display: block;
+    margin-bottom: .2em;
+    font-size: 12px;
+    display: none;
+}
+.slash {
+    font-size: 20px;
+}
+a {
+    text-decoration: none;
+}
+img {
+    max-width: 500px;
+}
+</style>
+<title>{{ base_url }}</title>
+</head>
+<body>
+    <div class='url'>
+        <span class='slash'>{{ base_url }}</span>
+        <div class='field'>
+            <label>Image Name</label>
+            <input placeholder='Image Name' id='name'>
+        </div>
+        <span class='slash'>/</span>
+        <div class='field'>
+            <label>Top Text</label>
+            <input placeholder='Top Text' id='top'>
+        </div>
+        <span class='slash'>/</span>
+        <div class='field'>
+            <label>Bottom Text</label>
+            <input placeholder='Bottom Text' id='bottom'>
+        </div>
+        <span class='slash'>.png</span>
+    </div>
+    <br />
+    <p>
+        <a href='' id='link'></a>
+    </p>
+    <br />
+    <img src='' id='img' />
+    <script>
+        function debounce(fn, delay) {
+            var timer = null;
+            return function () {
+                var context = this, args = arguments;
+                clearTimeout(timer);
+                timer = setTimeout(function () {
+                    fn.apply(context, args);
+                }, delay);
+            };
+        }
+        var memeName = document.getElementById('name');
+        var topText = document.getElementById('top');
+        var bottomText = document.getElementById('bottom');
+        var img = document.getElementById('img');
+        var link = document.getElementById('link');
+        img.onload = function(e) {
+            img.style.visibility = 'visible';
+        }
+
+        function memeUrl() {
+            var dirs = [encodeURIComponent(memeName.value)];
+            if(topText.value || bottomText.value) {
+                dirs.push(encodeURIComponent(topText.value));
+                dirs.push(encodeURIComponent(bottomText.value));
+            }
+
+            return '{{ base_url }}' + dirs.join('/');
+        }
+
+        var doit = debounce(function() {
+            img.style.visibility = 'hidden';
+            img.src = memeUrl();
+            link.innerHTML = memeUrl();
+            link.href = memeUrl();
+        }, 1000);
+        var updateImage = function() {
+            memeName.value = memeName.value.replace(/ /g,"_");
+            topText.value = topText.value.replace(/ /g,"_");
+            bottomText.value = bottomText.value.replace(/ /g,"_");
+            doit();
+        }
+
+        updateImage();
+        memeName.addEventListener('input', function() { updateImage(); });
+        topText.addEventListener('input', function() { updateImage(); });
+        bottomText.addEventListener('input', function() { updateImage(); });
+        memeName.addEventListener('focus', function() { this.select(); });
+        topText.addEventListener('focus', function() { this.select(); });
+        bottomText.addEventListener('focus', function() { this.select(); });
+    </script>
+</body>
+</html>
+

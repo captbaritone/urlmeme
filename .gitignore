@@ -1,0 +1,4 @@
+*.pyc
+static/memes/*.png
+templates/memes/*.jpg
+env
