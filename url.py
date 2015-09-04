@@ -8,6 +8,7 @@ from flask import Flask, send_from_directory, render_template, request
 from memegenerator import gen_meme
 from ngram import NGram
 import md5
+from logging.handlers import RotatingFileHandler
 
 APP_ROOT = os.path.dirname(__file__)
 MEME_PATH = os.path.join(APP_ROOT, 'static/memes/')
