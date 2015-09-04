@@ -50,18 +50,17 @@ def help():
     return render_template('help.html', base_url=request.base_url)
 
 
-@app.route("/<meme_name>/")
-@app.route("/<meme_name>/<ext>")
-@app.route("/<meme_name>/<top>/")
-@app.route("/<meme_name>/<top>.png")
-@app.route("/<meme_name>/<top>/.png")
-@app.route("/<meme_name>//<bottom>/")
-@app.route("/<meme_name>//<bottom>.png")
-@app.route("/<meme_name>//<bottom>/.png")
-@app.route("/<meme_name>/<top>/<bottom>")
-@app.route("/<meme_name>/<top>/<bottom>.png")
-@app.route("/<meme_name>/<top>/<bottom>/.png")
-def meme(meme_name, top='', bottom='', ext=''):
+@app.route('/<path:path>')
+def meme(path):
+    if path.endswith(('.png', '.jpg')):
+        path = path[:-4]
+
+    path_parts = path.split('/')
+    while(len(path_parts) < 3):
+        path_parts.append('')
+
+    meme_name, top, bottom = tuple(path_parts)
+
     meme_image = guess_meme_image(meme_name)
     meme_path = os.path.join(APP_ROOT, 'templates/memes/', meme_image)
     top = replace_underscore(top)
