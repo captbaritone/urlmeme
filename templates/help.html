@@ -43,6 +43,7 @@ a {
 }
 img {
     max-width: 500px;
+    visibility: hidden;
 }
 </style>
 <title>{{ base_url }}</title>
@@ -83,45 +84,48 @@ img {
                 }, delay);
             };
         }
-        var memeName = document.getElementById('name');
-        var topText = document.getElementById('top');
-        var bottomText = document.getElementById('bottom');
+        var fields = ['name', 'top', 'bottom'].map(function(item) {
+            return document.getElementById(item);
+        });
         var img = document.getElementById('img');
         var link = document.getElementById('link');
+
         img.onload = function(e) {
             img.style.visibility = 'visible';
         }
 
         function memeUrl() {
-            var dirs = [encodeURIComponent(memeName.value)];
-            if(topText.value || bottomText.value) {
-                dirs.push(encodeURIComponent(topText.value));
-                dirs.push(encodeURIComponent(bottomText.value));
+            var dirs = [];
+            fields.forEach(function(item) {
+                if(item.value) {
+                    dirs.push(encodeURIComponent(item.value));
+                }
+            });
+            if(dirs.join('') === '') {
+                return '';
             }
-
-            return '{{ base_url }}' + dirs.join('/');
+            return '{{ base_url }}' + dirs.join('/') + '.png';
         }
 
-        var doit = debounce(function() {
+        var updateMeme = debounce(function() {
             img.style.visibility = 'hidden';
             img.src = memeUrl();
             link.innerHTML = memeUrl();
             link.href = memeUrl();
         }, 1000);
-        var updateImage = function() {
-            memeName.value = memeName.value.replace(/ /g,"_");
-            topText.value = topText.value.replace(/ /g,"_");
-            bottomText.value = bottomText.value.replace(/ /g,"_");
-            doit();
+
+        var processChange = function() {
+            fields.forEach(function(item) {
+                item.value = item.value.replace(/ /g,"_");
+            });
+            updateMeme();
         }
 
-        updateImage();
-        memeName.addEventListener('input', function() { updateImage(); });
-        topText.addEventListener('input', function() { updateImage(); });
-        bottomText.addEventListener('input', function() { updateImage(); });
-        memeName.addEventListener('focus', function() { this.select(); });
-        topText.addEventListener('focus', function() { this.select(); });
-        bottomText.addEventListener('focus', function() { this.select(); });
+        processChange();
+        fields.forEach(function(item) {
+            item.addEventListener('input', function() { processChange(); });
+            item.addEventListener('focus', function() { this.select(); });
+        });
     </script>
 </body>
 </html>
