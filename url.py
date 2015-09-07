@@ -44,7 +44,8 @@ def guess_meme_image(meme_name):
             if best_score is None or score > best_score:
                 best_score = score
                 best = guess_image
-    app.logger.info('Pick meme %s for name "%s"' % (best, meme_name))
+                app.logger.info('New best meme for "%s": "%s" (Score: %s)', meme_name, guess, score)
+    app.logger.info('Picked meme "%s" for name "%s"' % (best, meme_name))
     return best
 
 
@@ -55,30 +56,44 @@ def help():
 
 @app.route('/<path:path>')
 def meme(path):
-    if path.endswith(('.png', '.jpg')):
-        path = path[:-4]
+    image_extensions = ('png', 'jpeg', 'jpg', 'gif')
+    extensions = image_extensions + ('json', 'log')
+    ext = 'jpg'
+    if path.endswith(tuple('.%s' % e for e in extensions)):
+        abc = path.split('.')
+        path = ''.join(abc[:-1])
+        ext = abc[-1]
 
     path_parts = path.split('/')
     while(len(path_parts) < 3):
         path_parts.append('')
 
-    meme_name, top, bottom = tuple(path_parts)
+    try:
+        meme_name, top, bottom = tuple(path_parts)
+    except ValueError:
+        return '404'
 
     meme_image = guess_meme_image(meme_name)
-    meme_path = os.path.join(APP_ROOT, 'templates/memes/', meme_image)
     top = replace_underscore(top)
     bottom = replace_underscore(bottom)
 
-    meme_id = md5.new("%s|%s|%s" % (meme_image, top, bottom)).hexdigest()
-    file_path = '%s.png' % meme_id
-    try:
-        open(MEME_PATH + file_path)
-        app.logger.debug('file exists')
-    except IOError:
-        app.logger.error('Generating Meme')
-        gen_meme(meme_path + '.jpg', top, bottom, MEME_PATH + file_path)
+    if ext == 'log':
+        return meme_image
+    elif ext == 'json':
+        return json.dumps({'image': meme_image, 'top': top, 'bottom': bottom})
+    elif ext in image_extensions:
+        meme_path = os.path.join(APP_ROOT, 'templates/memes/', meme_image)
+        meme_id = md5.new("%s|%s|%s" % (meme_image, top, bottom)).hexdigest()
+        file_path = '%s.%s' % (meme_id, ext)
+        try:
+            open(MEME_PATH + file_path)
+            raise IOError()
+            app.logger.debug('file exists')
+        except IOError:
+            app.logger.error('Generating Meme')
+            gen_meme(meme_path + '.jpg', top, bottom, MEME_PATH + file_path)
 
-    return send_from_directory(MEME_PATH, file_path)
+        return send_from_directory(MEME_PATH, file_path)
 
 if __name__ == "__main__":
     handler = RotatingFileHandler(
