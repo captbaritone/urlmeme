@@ -3,7 +3,7 @@ import logging
 import json
 import os
 
-from flask import Flask, send_from_directory, render_template, request
+from flask import Flask, send_from_directory, render_template, request, abort
 
 from memegenerator import gen_meme
 from ngram import NGram
@@ -35,7 +35,7 @@ def guess_meme_image(meme_name):
     similarity
     '''
     meme_name = tokenize(meme_name)
-    best = '404'
+    best = ''
     best_score = None
     for guess_image, names in MEMES.iteritems():
         for guess in names:
@@ -71,7 +71,7 @@ def meme(path):
     try:
         meme_name, top, bottom = tuple(path_parts)
     except ValueError:
-        return '404'
+        abort(404)
 
     meme_image = guess_meme_image(meme_name)
     top = replace_underscore(top)
