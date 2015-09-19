@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/captbaritone/urlmeme.svg?branch=master)](https://travis-ci.org/captbaritone/urlmeme)
+
 # urlme.me
 
 A meme generator where the URL is the user interface.
