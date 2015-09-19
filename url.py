@@ -7,7 +7,7 @@ from flask import Flask, send_from_directory, render_template, request, abort
 
 from memegenerator import gen_meme
 from ngram import NGram
-import md5
+from hashlib import md5
 from logging.handlers import RotatingFileHandler
 
 APP_ROOT = os.path.dirname(__file__)
@@ -84,7 +84,7 @@ def meme(path):
         return json.dumps({'image': meme_image, 'top': top, 'bottom': bottom})
     elif ext in image_extensions:
         meme_path = os.path.join(TEMPLATES_PATH, meme_image)
-        meme_id = md5.new("%s|%s|%s" % (meme_image, top, bottom)).hexdigest()
+        meme_id = md5("%s|%s|%s" % (meme_image, top, bottom)).hexdigest()
         file_path = '%s.%s' % (meme_id, ext)
         try:
             open(MEME_PATH + file_path)
