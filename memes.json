@@ -232,6 +232,9 @@
     "good-girl-gina": [
         "good girl gina"
     ],
+    "good-guy-boss": [
+        "good guy boss"
+    ],
     "good-guy-greg": [
         "ggg",
         "good guy greg"
@@ -414,7 +417,12 @@
         "permission bane"
     ],
     "peter-griffin-news": [
-        "peter griffin news"
+        "peter griffin news",
+        "grinds my gears",
+        "you know what really grinds my gears"
+    ],
+    "bad-guy-boss": [
+        "bad guy boss"
     ],
     "philosoraptor": [
         "philosoraptor"
@@ -461,7 +469,13 @@
     "satisfied-seal": [
         "satisfied seal"
     ],
+    "maury-lie-detector": [
+        "maury",
+        "maury lie detector",
+        "determined that was a lie"
+    ],
     "revenge-duck": [
+        "advice",
         "revenge duck",
         "revenge mallard",
         "black mallard",
@@ -471,8 +485,15 @@
     "say-that-again-i-dare-you": [
         "say that again i dare you"
     ],
+    "minor-mistake-marvin": [
+        "minor mistake marvin",
+        "microwave"
+    ],
     "scrooge-mcduck-2": [
         "scrooge mcduck 2"
+    ],
+    "scumbag-stacy": [
+        "scumbag stacy"
     ],
     "scumbag-brain": [
         "scumbag brain"
@@ -484,6 +505,7 @@
         "scumbag redditor"
     ],
     "scumbag-steve": [
+        "scumbag",
         "scumbag-steve",
         "douch bag"
     ],
@@ -539,9 +561,12 @@
         "south park craig"
     ],
     "spiderman-computer-desk": [
-        "spiderman computer desk"
+        "spiderman",
+        "spiderman computer desk",
+        "and I'm just sitting here"
     ],
     "success-kid": [
+        "success",
         "success kid"
     ],
     "successful-black-man": [

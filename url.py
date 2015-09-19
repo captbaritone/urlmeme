@@ -12,6 +12,7 @@ from logging.handlers import RotatingFileHandler
 
 APP_ROOT = os.path.dirname(__file__)
 MEME_PATH = os.path.join(APP_ROOT, 'static/memes/')
+TEMPLATES_PATH = os.path.join(APP_ROOT, 'templates/memes/')
 
 app = Flask(__name__)
 
@@ -60,9 +61,9 @@ def meme(path):
     extensions = image_extensions + ('json', 'log')
     ext = 'jpg'
     if path.endswith(tuple('.%s' % e for e in extensions)):
-        abc = path.split('.')
-        path = ''.join(abc[:-1])
-        ext = abc[-1]
+        path_parts = path.split('.')
+        path = ''.join(path_parts[:-1])
+        ext = path_parts[-1]
 
     path_parts = path.split('/')
     while(len(path_parts) < 3):
@@ -82,13 +83,12 @@ def meme(path):
     elif ext == 'json':
         return json.dumps({'image': meme_image, 'top': top, 'bottom': bottom})
     elif ext in image_extensions:
-        meme_path = os.path.join(APP_ROOT, 'templates/memes/', meme_image)
+        meme_path = os.path.join(TEMPLATES_PATH, meme_image)
         meme_id = md5.new("%s|%s|%s" % (meme_image, top, bottom)).hexdigest()
         file_path = '%s.%s' % (meme_id, ext)
         try:
             open(MEME_PATH + file_path)
-            raise IOError()
-            app.logger.debug('file exists')
+            app.logger.debug('file "%s" exists', file_path)
         except IOError:
             app.logger.error('Generating Meme')
             gen_meme(meme_path + '.jpg', top, bottom, MEME_PATH + file_path)
