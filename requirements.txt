@@ -1,2 +1,3 @@
 ngram
 Flask
+Pillow
