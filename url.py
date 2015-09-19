@@ -38,7 +38,7 @@ def guess_meme_image(meme_name):
     meme_name = tokenize(meme_name)
     best = ''
     best_score = None
-    for guess_image, names in MEMES.iteritems():
+    for guess_image, names in MEMES.items():
         for guess in names:
             guess = tokenize(guess)
             score = NGram.compare(guess, meme_name)
