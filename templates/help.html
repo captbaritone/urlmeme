@@ -1,78 +1,158 @@
 <html>
 <head>
-    <style>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
 input {
     background-color: #fff;
     border-color: -moz-use-text-color -moz-use-text-color #e2e2e2;
     border-width: 1px;
     color: #000;
-    font-size: 12px;
-    margin: 0 .4em;
-    letter-spacing: normal;
+    margin: 0 .2em;
     outline-style: none;
     padding: .4em 0;
     text-indent: 0.25em;
-    width: 14em;
+    width: 8em;
+    display: block;
+    font-family: monospace;
 }
 body {
+    max-width: 600px;
+    padding: 0;
+    margin: 0 auto;
+    font-family: "Helvetica Neue",Arial,Helvetica,sans-serif;
+    background: #333 url("http://fakeimg.pl/static/images/dark_wall.png") repeat scroll 0 0;
+    color: #eae0d0;
     text-align: center;
-    font-family: sans-serif;
-    color: #929292;
+}
+.intro {
+    line-height: 1.5em;
+    font-size: 20px;
+}
+h1 {
+    text-align: center;
+    margin-bottom: 0.15em;
+    margin-top: 0.75em;
+}
+a, .intro {
+    font-weight: normal;
+    color: #ffa273;
 }
 .url {
-    margin: 0 auto;
-    display: inline-block;
-    margin: 50px;
-    font-size: 20px;
+    margin: 15px auto;
+    font-size:0; /* Supress space between elements */
+    text-align: center;
+    padding-top: 15px;
+    line-height: 1.5em;
+    vertical-align: top;
+}
+
+.url .field,
+.url .field input,
+.url .slash,
+.hint {
+    font-size: 12px;
+}
+
+.hint {
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    background-color: pink;
+    text-align: left;
+    padding: 15px 20px;
+    display: none;
+}
+.hint {
+    position: relative;
+}
+.hint:after {
+    top: 100%;
+    border: solid transparent;
+    content: " ";
+    height: 0;
+    width: 0;
+    position: absolute;
+    pointer-events: none;
+    border-top-color: pink;
+    border-width: 10px;
+    margin-left: -10px;
+
+    display: none;
+}
+
+.hint.name:after {
+    left: 40%;
+}
+.hint.top:after {
+    left: 60%;
+}
+.hint.bottom:after {
+    left: 80%;
 }
 
 .url .field {
     display: inline-block;
 }
-.url .field label {
-    display: block;
-    margin-bottom: .2em;
-    font-size: 12px;
-    display: none;
-}
-.slash {
-    font-size: 20px;
+.url .slash {
+    font-weight: bold;
+    font-family: Menlo,Monaco,Consolas,"Andale Mono","DejaVu Sans Mono",monospace;
+    display: inline-block;
 }
 a {
     text-decoration: none;
 }
-img {
-    max-width: 500px;
+#img {
     visibility: hidden;
 }
+
+.example {
+    border-radius: 8px;
+    background-color: #eae0d0;
+    color: #333;
+    margin: 0 auto;
+    display: block;
+    border: 1px solid black;
+}
+.example img {
+    margin-top: 10px;
+    width: 100%;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+}
+.footer {
+    font-size: 14px;
+    text-align: center;
+    margin: 2em 0 5em 0;
+}
+
 </style>
 <title>{{ base_url }}</title>
 </head>
 <body>
-    <div class='url'>
-        <span class='slash'>{{ base_url }}</span>
-        <div class='field'>
-            <label>Image Name</label>
-            <input placeholder='Image Name' id='name'>
+    <h1>UrlMeme</h1>
+    <div class='intro'><p>Make memes anywhere you can type a URL</p></div>
+    <div class='example'>
+        <div class='hint' id='hint'></div>
+        <div class='url'>
+            <span class='slash'>http://urlme.me/</span>
+            <div class='field'>
+                <input placeholder='Image Name' id='name' value='success'>
+            </div>
+            <span class='slash'>/</span>
+            <div class='field'>
+                <input placeholder='Top Text' id='top' value='typed_a_url'>
+            </div>
+            <span class='slash'>/</span>
+            <div class='field'>
+                <input placeholder='Bottom Text' id='bottom' value='made_a_meme'>
+            </div>
+            <span class='slash'>.jpg</span>
+            <!--<img src='http://www.clker.com/cliparts/z/N/v/9/Q/p/copy-icon.svg' style='width: 20px'>-->
         </div>
-        <span class='slash'>/</span>
-        <div class='field'>
-            <label>Top Text</label>
-            <input placeholder='Top Text' id='top'>
-        </div>
-        <span class='slash'>/</span>
-        <div class='field'>
-            <label>Bottom Text</label>
-            <input placeholder='Bottom Text' id='bottom'>
-        </div>
-        <span class='slash'>.png</span>
+        <img src='' id='img' />
     </div>
-    <br />
-    <p>
-        <a href='' id='link'></a>
-    </p>
-    <br />
-    <img src='' id='img' />
+    <div class='footer'>
+        <p>by <a href='https://jordaneldredge.com/'>Jordan Eldredge</a> (<a href='https://twitter.com/captbaritone'>@captbaritone</a>) &bull; <a href='https://github.com'>GitHub</a></p>
+    </div>
     <script>
         function debounce(fn, delay) {
             var timer = null;
@@ -89,6 +169,7 @@ img {
         });
         var img = document.getElementById('img');
         var link = document.getElementById('link');
+        var hint = document.getElementById('hint');
 
         img.onload = function(e) {
             img.style.visibility = 'visible';
@@ -104,14 +185,14 @@ img {
             if(dirs.join('') === '') {
                 return '';
             }
-            return '{{ base_url }}' + dirs.join('/') + '.png';
+            return '{{ base_url }}' + dirs.join('/') + '.jpg';
         }
 
         var updateMeme = debounce(function() {
             img.style.visibility = 'hidden';
             img.src = memeUrl();
-            link.innerHTML = memeUrl();
-            link.href = memeUrl();
+            //link.innerHTML = memeUrl();
+            //link.href = memeUrl();
         }, 1000);
 
         var processChange = function() {
@@ -124,7 +205,26 @@ img {
         processChange();
         fields.forEach(function(item) {
             item.addEventListener('input', function() { processChange(); });
-            item.addEventListener('focus', function() { this.select(); });
+            item.addEventListener('focus', function(e) {
+                var hintText = false;
+                switch(e.target.id) {
+                    case 'name':
+                        hintText = '<strong>Meme name:</strong> A search string that you might type into Google to find this meme.';
+                        break;
+                    case 'top':
+                        hintText = '<strong>Top Text:</strong> The text at the top of your image. Use _ instead of space.';
+                        break;
+                    case 'bottom':
+                        hintText = '<strong>Bottom Text:</strong> The text at the top of your image. Use _ instead of space.';
+                        break;
+                }
+                hint.innerHTML = hintText;
+                hint.style.display = 'block';
+                this.select();
+            });
+            item.addEventListener('blur', function() {
+                hint.style.display = 'none';
+            });
         });
     </script>
 </body>
