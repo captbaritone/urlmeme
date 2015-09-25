@@ -1,6 +1,8 @@
 <html>
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scaleable=0">
+
+
 <style>
 input {
     background-color: #fff;
@@ -11,9 +13,20 @@ input {
     outline-style: none;
     padding: .4em 0;
     text-indent: 0.25em;
+    font-family: monospace;
+}
+.meme {
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-image: none;
+    /* Could put a loading gif here */
+}
+.url input {
     width: 8em;
     display: block;
-    font-family: monospace;
+}
+.hint input { 
+    width: 80%;
 }
 body {
     max-width: 600px;
@@ -22,6 +35,11 @@ body {
     font-family: "Helvetica Neue",Arial,Helvetica,sans-serif;
     background: #333 url("http://fakeimg.pl/static/images/dark_wall.png") repeat scroll 0 0;
     color: #eae0d0;
+    text-align: center;
+}
+
+#link {
+    display: none;
     text-align: center;
 }
 .intro {
@@ -38,10 +56,9 @@ a, .intro {
     color: #ffa273;
 }
 .url {
-    margin: 15px auto;
+    margin: 20px auto;
     font-size:0; /* Supress space between elements */
     text-align: center;
-    padding-top: 15px;
     line-height: 1.5em;
     vertical-align: top;
 }
@@ -58,8 +75,8 @@ a, .intro {
     border-top-right-radius: 8px;
     background-color: #fcf8e3;
     text-align: left;
-    padding: 15px 20px;
-    display: none;
+    padding: 10px 20px;
+    text-align: center;
 }
 .hint {
     position: relative;
@@ -89,6 +106,11 @@ a, .intro {
     left: 80%;
 }
 
+.hint .copy img {
+    width: 15px;
+    float: right;
+    margin: 0 0px -5px 0;
+}
 .url .field {
     display: inline-block;
 }
@@ -113,7 +135,6 @@ a {
     border: 1px solid black;
 }
 .example img {
-    margin-top: 10px;
     width: 100%;
     border-bottom-left-radius: 8px;
     border-bottom-right-radius: 8px;
@@ -125,13 +146,20 @@ a {
 }
 
 </style>
-<title>{{ base_url }}</title>
+<title>UrlMeme - Make memes anywhere you can type a URL</title>
 </head>
 <body>
     <h1>UrlMeme</h1>
-    <div class='intro'><p>Make memes anywhere you can type a URL</p></div>
+    <div class='intro'><p>Make memes anywhere you can type a URL</p>
+    </div>
     <div class='example'>
-        <div class='hint' id='hint'></div>
+        <div class='hint'>
+            <span id='hint'></span>
+            <input id='link' >
+            <a class='copy' href='http://urlme.me'>
+                <img id='copy' src='http://www.clker.com/cliparts/z/N/v/9/Q/p/copy-icon.svg'>
+            </a>
+        </div>
         <div class='url'>
             <span class='slash'>http://urlme.me/</span>
             <div class='field'>
@@ -146,9 +174,10 @@ a {
                 <input placeholder='Bottom Text' id='bottom' value='made_a_meme'>
             </div>
             <span class='slash'>.jpg</span>
-            <!--<img src='http://www.clker.com/cliparts/z/N/v/9/Q/p/copy-icon.svg' style='width: 20px'>-->
         </div>
-        <img src='' id='img' />
+        <div class='meme'>
+            <img src='' id='img' />
+        </div>
     </div>
     <div class='footer'>
         <p>by <a href='https://jordaneldredge.com/'>Jordan Eldredge</a> (<a href='https://twitter.com/captbaritone'>@captbaritone</a>) &bull; <a href='https://github.com/captbaritone/urlmeme'>GitHub</a></p>
@@ -170,9 +199,11 @@ a {
         var img = document.getElementById('img');
         var link = document.getElementById('link');
         var hint = document.getElementById('hint');
+        var copy = document.getElementById('copy');
 
         img.onload = function(e) {
             img.style.visibility = 'visible';
+            img.style.display = 'inline';
         }
 
         function memeUrl() {
@@ -191,18 +222,32 @@ a {
         var updateMeme = debounce(function() {
             img.style.visibility = 'hidden';
             img.src = memeUrl();
-            //link.innerHTML = memeUrl();
-            //link.href = memeUrl();
         }, 1000);
 
         var processChange = function() {
             fields.forEach(function(item) {
                 item.value = item.value.replace(/ /g,"_");
             });
+            link.value = memeUrl();
             updateMeme();
         }
 
         processChange();
+        var setDefaultHint = function() {
+            hint.innerHTML = '<strong>Give it a try below!</strong>';
+        }
+        setDefaultHint();
+
+        copy.onclick = function(e) {
+            link.style.display = "inline";
+            hint.innerHTML = "";
+            link.select();
+            link.onblur = function() {
+                link.style.display = "none";
+                setDefaultHint();
+            }
+            e.preventDefault();
+        };
         fields.forEach(function(item) {
             item.addEventListener('input', function() { processChange(); });
             item.addEventListener('focus', function(e) {
@@ -219,11 +264,10 @@ a {
                         break;
                 }
                 hint.innerHTML = hintText;
-                hint.style.display = 'block';
                 this.select();
             });
             item.addEventListener('blur', function() {
-                hint.style.display = 'none';
+                setDefaultHint();
             });
         });
     </script>
