@@ -246,7 +246,7 @@ h1 {
             linkBox.style.display = "block";
             url.style.display = "none";
             hint.innerHTML = "<strong>Copy!</strong>";
-            link.select();
+            link.setSelectionRange(0, 9999);
             link.onblur = function() {
                 linkBox.style.display = "none";
                 url.style.display = "block";
