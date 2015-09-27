@@ -1,33 +1,7 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1, user-scaleable=0">
-
-
 <style>
-input {
-    background-color: #fff;
-    border-color: -moz-use-text-color -moz-use-text-color #e2e2e2;
-    border-width: 1px;
-    color: #000;
-    margin: 0 .2em;
-    outline-style: none;
-    padding: .4em 0;
-    text-indent: 0.25em;
-    font-family: monospace;
-}
-.meme {
-    background-repeat: no-repeat;
-    background-position: center center;
-    background-image: none;
-    /* Could put a loading gif here */
-}
-.url input {
-    width: 8em;
-    display: block;
-}
-.hint input { 
-    width: 80%;
-}
 body {
     max-width: 600px;
     padding: 0;
@@ -37,36 +11,83 @@ body {
     color: #FFF0D1;
     text-align: center;
 }
+a {
+    color: #FF9966;
+    text-decoration: none;
+}
 
-#link {
-    display: none;
-    text-align: center;
+h1 {
+    font-size: 20px;
+    margin: 10px 0;
 }
 .intro {
-    line-height: 1.5em;
     font-size: 20px;
-}
-h1 {
-    text-align: center;
-    margin-bottom: 0.15em;
-    margin-top: 0.75em;
-    font-weight: normal;
-    font-size: 40px;
-}
-a, .intro {
-    font-weight: normal;
+    font-size: 15px;
     color: #FF9966;
 }
-.url {
-    margin: 20px auto;
+
+.intro p {
+    margin: 10px 0;
+}
+
+.demo {
+    border-radius: 8px;
+    background-color: #FFF0D1;
+    color: #20160A;
+    margin: 0 auto;
+    display: block;
+    border: 1px solid black;
+}
+
+.interaction {
+    padding: 10px 0;
     font-size:0; /* Supress space between elements */
     text-align: center;
     line-height: 1.5em;
     vertical-align: top;
 }
+.interaction .slash {
+    font-weight: bold;
+    font-family: Menlo,Monaco,Consolas,"Andale Mono","DejaVu Sans Mono",monospace;
+    display: inline-block;
+}
+.interaction input {
+    background-color: #fff;
+    border-color: -moz-use-text-color -moz-use-text-color #e2e2e2;
+    border-width: 1px;
+    color: #000;
+    margin: .5em .2em;
+    outline-style: none;
+    padding: .4em 0;
+    text-indent: 0.25em;
+    font-family: monospace;
+    width: 8em;
+    display: inline-block;
+}
 
-.url .field,
-.url .field input,
+.demo .meme {
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-image: none;
+    /* Could put a loading gif here */
+}
+
+.demo .meme img {
+    width: 100%;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+    visibility: hidden;
+}
+
+.demo .link-box {
+    display: none;
+}
+
+.demo #link input { 
+    width: 80%;
+}
+
+.interaction input,
 .url .slash,
 .hint {
     font-size: 12px;
@@ -79,72 +100,56 @@ a, .intro {
     padding: 10px 20px;
     text-align: center;
     position: relative;
-        background-color: #A1BAA1;
-}
-.hint:after {
-    top: 100%;
-    border: solid transparent;
-    content: " ";
-    height: 0;
-    width: 0;
-    position: absolute;
-    pointer-events: none;
-    border-top-color: pink;
-    border-width: 10px;
-    margin-left: -10px;
-
-    display: none;
+    background-color: #A1BAA1;
 }
 
-.hint.name:after {
-    left: 40%;
-}
-.hint.top:after {
-    left: 60%;
-}
-.hint.bottom:after {
-    left: 80%;
+.demo .interaction .link-box input {
+    width: 80%;
 }
 
-.hint .copy img {
-    width: 15px;
+.interaction .icon {
+    cursor: pointer;
     float: right;
-    margin: 0 0px -5px 0;
+    background-size: 15px 15px;
+    background-position: center center;
+    background-repeat: no-repeat;
+    width: 15px;
+    height: 35px;
+    margin-right: 15px;
 }
-.url .field {
-    display: inline-block;
-}
-.url .slash {
-    font-weight: bold;
-    font-family: Menlo,Monaco,Consolas,"Andale Mono","DejaVu Sans Mono",monospace;
-    display: inline-block;
-}
-a {
-    text-decoration: none;
-}
-#img {
-    visibility: hidden;
+.url #copy {
+    background-image: url('http://www.clker.com/cliparts/z/N/v/9/Q/p/copy-icon.svg');
 }
 
-.example {
-    border-radius: 8px;
-    background-color: #FFF0D1;
-    color: #20160A;
-    margin: 0 auto;
-    display: block;
-    border: 1px solid black;
+.link-box #cancel-copy {
+    background-image: url('http://uxrepo.com/static/icon-sets/ionicons/svg/close.svg');
 }
-.example img {
-    width: 100%;
-    border-bottom-left-radius: 8px;
-    border-bottom-right-radius: 8px;
-}
+
 .footer {
     font-size: 14px;
     text-align: center;
     margin: 2em 0 5em 0;
+    margin: 1em 0 1em 0;
 }
 
+@media (min-width: 600px) {
+    h1 {
+        margin-bottom: 0.15em;
+        margin-top: 0.75em;
+        font-weight: normal;
+        font-size: 40px;
+    }
+    .intro {
+        font-size: 20px;
+    }
+
+    .intro p {
+        margin: 20px 0;
+    }
+    .interaction {
+        margin: 20px auto;
+    }
+}
 </style>
 <title>UrlMeme - Make memes anywhere you can type a URL</title>
 </head>
@@ -152,28 +157,25 @@ a {
     <h1>UrlMeme</h1>
     <div class='intro'><p>Make memes anywhere you can type a URL</p>
     </div>
-    <div class='example'>
+    <div class='demo'>
         <div class='hint'>
             <span id='hint'></span>
-            <input id='link' >
-            <a class='copy' href='http://urlme.me'>
-                <img id='copy' src='http://www.clker.com/cliparts/z/N/v/9/Q/p/copy-icon.svg'>
-            </a>
         </div>
-        <div class='url'>
-            <span class='slash'>http://urlme.me/</span>
-            <div class='field'>
+        <div class='interaction'>
+            <div class='url' id='url'>
+                <span class='slash'>http://urlme.me/</span>
                 <input placeholder='Image Name' id='name' value='success'>
-            </div>
-            <span class='slash'>/</span>
-            <div class='field'>
+                <span class='slash'>/</span>
                 <input placeholder='Top Text' id='top' value='typed_a_url'>
-            </div>
-            <span class='slash'>/</span>
-            <div class='field'>
+                <span class='slash'>/</span>
                 <input placeholder='Bottom Text' id='bottom' value='made_a_meme'>
+                <span class='slash'>.jpg</span>
+                <a id='copy' class='icon'></a>
             </div>
-            <span class='slash'>.jpg</span>
+            <div class='link-box' id='link-box'>
+                <input id='link'>
+                <a id='cancel-copy' class='icon'></a>
+            </div>
         </div>
         <div class='meme'>
             <img src='' id='img' />
@@ -200,6 +202,8 @@ a {
         var link = document.getElementById('link');
         var hint = document.getElementById('hint');
         var copy = document.getElementById('copy');
+        var linkBox = document.getElementById('link-box');
+        var url = document.getElementById('url');
 
         img.onload = function(e) {
             img.style.visibility = 'visible';
@@ -239,11 +243,13 @@ a {
         setDefaultHint();
 
         copy.onclick = function(e) {
-            link.style.display = "inline";
-            hint.innerHTML = "";
+            linkBox.style.display = "block";
+            url.style.display = "none";
+            hint.innerHTML = "<strong>Copy!</strong>";
             link.select();
             link.onblur = function() {
-                link.style.display = "none";
+                linkBox.style.display = "none";
+                url.style.display = "block";
                 setDefaultHint();
             }
             e.preventDefault();
