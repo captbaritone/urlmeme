@@ -160,8 +160,7 @@ h1 {
 </head>
 <body>
     <h1>UrlMe<span class='dot'>.</span>me</h1>
-    <div class='intro'><p>Make memes anywhere you can type a URL</p>
-    </div>
+    <div class='intro'><p>Make memes anywhere you can type a URL</p></div>
     <div class='demo'>
         <div class='hint'>
             <span id='hint'></span>
@@ -212,7 +211,6 @@ h1 {
 
         img.onload = function(e) {
             img.style.visibility = 'visible';
-            img.style.display = 'inline';
         }
 
         function memeUrl() {
@@ -241,12 +239,9 @@ h1 {
             updateMeme();
         }
 
-        processChange();
         var setDefaultHint = function() {
             hint.innerHTML = '<strong>Give it a try below!</strong>';
         }
-        setDefaultHint();
-
         copy.onclick = function(e) {
             linkBox.style.display = "block";
             url.style.display = "none";
@@ -259,6 +254,10 @@ h1 {
             }
             e.preventDefault();
         };
+
+        processChange();
+        setDefaultHint();
+
         fields.forEach(function(item) {
             item.addEventListener('input', function() { processChange(); });
             item.addEventListener('focus', function(e) {
@@ -277,9 +276,7 @@ h1 {
                 hint.innerHTML = hintText;
                 this.select();
             });
-            item.addEventListener('blur', function() {
-                setDefaultHint();
-            });
+            item.addEventListener('blur', setDefaultHint);
         });
     </script>
 </body>
