@@ -90,7 +90,7 @@ def meme(path):
             open(MEME_PATH + file_path)
             app.logger.debug('file "%s" exists', file_path)
         except IOError:
-            app.logger.error('Generating Meme')
+            app.logger.info('Generating Meme')
             gen_meme(meme_path + '.jpg', top, bottom, MEME_PATH + file_path)
 
         return send_from_directory(MEME_PATH, file_path)
