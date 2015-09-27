@@ -55,6 +55,12 @@ def help():
     return render_template('help.html', base_url=request.base_url)
 
 
+@app.route('/favicon.ico')
+def favicon():
+        return send_from_directory(os.path.join(app.root_path, 'static'),
+                                               'favicon.ico', mimetype='image/vnd.microsoft.icon')
+
+
 @app.route('/<path:path>')
 def meme(path):
     image_extensions = ('png', 'jpeg', 'jpg', 'gif')
