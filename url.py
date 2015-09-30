@@ -67,9 +67,7 @@ def meme(path):
     extensions = image_extensions + ('json', 'log')
     ext = 'jpg'
     if path.endswith(tuple('.%s' % e for e in extensions)):
-        path_parts = path.split('.')
-        path = ''.join(path_parts[:-1])
-        ext = path_parts[-1]
+        path, ext = os.path.splitext(path)
 
     path_parts = path.split('/')
     while(len(path_parts) < 3):
