@@ -68,6 +68,7 @@ def meme(path):
     ext = 'jpg'
     if path.endswith(tuple('.%s' % e for e in extensions)):
         path, ext = os.path.splitext(path)
+        ext = ext[1:]
 
     path_parts = path.split('/')
     while(len(path_parts) < 3):
