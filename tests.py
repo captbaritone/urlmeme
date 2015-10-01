@@ -17,8 +17,8 @@ with open(os.path.join(APP_ROOT, 'memes.json')) as data_file:
 class TestMemeTemplates(unittest.TestCase):
 
     def test_all_images_exist(self):
-        for meme in MEMES.keys():
-            meme_path = os.path.join(TEMPLATES_PATH, '%s.jpg' % meme)
+        for meme_name in MEMES.keys():
+            meme_path = os.path.join(TEMPLATES_PATH, '%s.jpg' % meme_name)
             self.assertTrue(os.path.isfile(meme_path), 'Missing meme template: %s' % meme_path)
 
     def test_no_extra_images_exist(self):
