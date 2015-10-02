@@ -242,7 +242,9 @@ h1 {
 
         var processChange = function() {
             fields.forEach(function(item) {
+                var position = item.selectionStart;
                 item.value = item.value.replace(/ /g,"_");
+                item.selectionEnd = position;
             });
             link.value = memeUrl();
             updateMeme();
