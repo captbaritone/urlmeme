@@ -80,7 +80,7 @@ def meme(path):
     except ValueError:
         abort(404)
 
-    meme_image = guess_meme_image(meme_name)
+    meme_image = guess_meme_image(replace_underscore(meme_name))
     top = replace_underscore(top)
     bottom = replace_underscore(bottom)
 

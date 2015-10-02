@@ -225,13 +225,9 @@ h1 {
         function memeUrl() {
             var dirs = [];
             fields.forEach(function(item) {
-                if(item.value) {
-                    dirs.push(encodeURIComponent(item.value));
-                }
+                var value = item.value || '_';
+                dirs.push(encodeURIComponent(value));
             });
-            if(dirs.join('') === '') {
-                return '';
-            }
             return '{{ base_url }}' + dirs.join('/') + '.jpg';
         }
 
