@@ -3,7 +3,7 @@ import logging
 import json
 import os
 
-from flask import Flask, send_from_directory, render_template, request, abort
+from flask import Flask, send_from_directory, send_file, render_template, request
 
 from memegenerator import gen_meme
 from ngram import NGram
@@ -13,6 +13,8 @@ from logging.handlers import RotatingFileHandler
 APP_ROOT = os.path.dirname(__file__)
 MEME_PATH = os.path.join(APP_ROOT, 'static/memes/')
 TEMPLATES_PATH = os.path.join(APP_ROOT, 'templates/memes/')
+IMAGE_EXTENSIONS = ('png', 'jpeg', 'jpg', 'gif')
+SUPPORTED_EXTENSIONS = IMAGE_EXTENSIONS + ('json', 'log')
 
 app = Flask(__name__)
 
@@ -26,8 +28,27 @@ def replace_underscore(string):
 
 
 def tokenize(string):
-    string = re.sub(r' ', '', string)
-    return replace_underscore(string.lower())
+    return re.sub(r' ', '', string.lower())
+
+
+def parse_meme_url(path):
+    """
+    Given a URL path, returns a named tuple representing the meme in question
+    (meme_name, top_text, bottom_text, extension)
+    """
+    ext = 'jpg'  # Default extension
+    if path.endswith(tuple('.%s' % e for e in SUPPORTED_EXTENSIONS)):
+        path, ext = os.path.splitext(path)
+        ext = ext[1:]
+
+    path = replace_underscore(path)
+    path_parts = path.split('/')[:3]
+    while(len(path_parts) < 3):
+        path_parts.append('')
+
+    path_parts.append(ext)
+
+    return tuple(path_parts)
 
 
 def guess_meme_image(meme_name):
@@ -50,6 +71,28 @@ def guess_meme_image(meme_name):
     return best
 
 
+def meme_file_path(meme_image, top, bottom, ext):
+    """ Generate a hash filename for this meme image """
+
+    token = "%s|%s|%s" % (meme_image, top, bottom)
+    meme_id = md5(token.encode('utf-8')).hexdigest()
+    file_path = '%s.%s' % (meme_id, ext)
+    return MEME_PATH + file_path
+
+
+def meme_image_response(meme_image, top, bottom, ext):
+    file_path = meme_file_path(meme_image, top, bottom, ext)
+    try:
+        open(file_path)
+        app.logger.debug('file "%s" exists', file_path)
+    except IOError:
+        app.logger.info('Generating Meme')
+        meme_path = os.path.join(TEMPLATES_PATH, meme_image)
+        gen_meme(meme_path + '.jpg', top, bottom, file_path)
+
+    return send_file(file_path)
+
+
 @app.route("/")
 def help():
     return render_template('help.html', base_url=request.base_url)
@@ -64,42 +107,15 @@ def favicon():
 
 @app.route('/<path:path>')
 def meme(path):
-    image_extensions = ('png', 'jpeg', 'jpg', 'gif')
-    extensions = image_extensions + ('json', 'log')
-    ext = 'jpg'
-    if path.endswith(tuple('.%s' % e for e in extensions)):
-        path, ext = os.path.splitext(path)
-        ext = ext[1:]
-
-    path_parts = path.split('/')
-    while(len(path_parts) < 3):
-        path_parts.append('')
-
-    try:
-        meme_name, top, bottom = tuple(path_parts)
-    except ValueError:
-        abort(404)
-
-    meme_image = guess_meme_image(replace_underscore(meme_name))
-    top = replace_underscore(top)
-    bottom = replace_underscore(bottom)
+    meme_name, top, bottom, ext = parse_meme_url(path)
+    meme_image = guess_meme_image(meme_name)
 
     if ext == 'log':
         return meme_image
     elif ext == 'json':
         return json.dumps({'image': meme_image, 'top': top, 'bottom': bottom})
-    elif ext in image_extensions:
-        meme_path = os.path.join(TEMPLATES_PATH, meme_image)
-        meme_id = md5("%s|%s|%s" % (meme_image, top, bottom)).hexdigest()
-        file_path = '%s.%s' % (meme_id, ext)
-        try:
-            open(MEME_PATH + file_path)
-            app.logger.debug('file "%s" exists', file_path)
-        except IOError:
-            app.logger.info('Generating Meme')
-            gen_meme(meme_path + '.jpg', top, bottom, MEME_PATH + file_path)
-
-        return send_from_directory(MEME_PATH, file_path)
+    elif ext in IMAGE_EXTENSIONS:
+        return meme_image_response(meme_image, top, bottom, ext)
 
 if __name__ == "__main__":
     handler = RotatingFileHandler(
