@@ -108,7 +108,7 @@ class TestMemeResponse(FlaskTestCase):
     def test_meme_log(self):
         response = self.app.get('success/made_an_assertion/tests_passed.log')
         self.assertEqual(200, response.status_code)
-        self.assertEqual('success-kid', response.data)
+        self.assertEqual('success-kid', response.get_data(as_text=True))
 
     def test_meme_json(self):
         response = self.app.get('success/made_an_assertion/tests_passed.json')
@@ -118,7 +118,7 @@ class TestMemeResponse(FlaskTestCase):
             u'bottom': u'tests passed'
         }
         self.assertEqual(200, response.status_code)
-        self.assertEqual(expected, json.loads(response.data))
+        self.assertEqual(expected, json.loads(response.get_data(as_text=True)))
 
     @skip('Image generation does not work on Travis yet')
     def test_good_image_response(self):
