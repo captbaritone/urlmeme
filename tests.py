@@ -109,11 +109,6 @@ class TestMemeFilePath(TestCase):
 
 class TestMemeResponse(FlaskTestCase):
 
-    def test_meme_log(self):
-        response = self.app.get('success/made_an_assertion/tests_passed.log')
-        self.assertEqual(200, response.status_code)
-        self.assertEqual('success-kid', response.get_data(as_text=True))
-
     def test_meme_json(self):
         response = self.app.get('success/made_an_assertion/tests_passed.json')
         expected = {
