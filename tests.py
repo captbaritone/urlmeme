@@ -1,7 +1,7 @@
 import json
 import os
 from mock import patch
-from unittest import TestCase, skip, main
+from unittest import TestCase, skip, skipIf, main
 
 from url import APP_ROOT, TEMPLATES_PATH, ERROR_BACKGROUND
 from url import replace_underscore
@@ -10,6 +10,8 @@ from url import guess_meme_image
 from url import parse_meme_url
 from url import derive_meme_path
 from url import app
+
+ON_TRAVIS = "TRAVIS" in os.environ and os.environ["TRAVIS"] == "true"
 
 
 # Maps meme's file name to its common names
@@ -119,26 +121,26 @@ class TestMemeResponse(FlaskTestCase):
         self.assertEqual(200, response.status_code)
         self.assertEqual(expected, json.loads(response.get_data(as_text=True)))
 
-    @skip('Image generation does not work on Travis yet')
+    @skipIf(ON_TRAVIS, 'Image generation does not work on Travis yet')
     @patch('imgur.upload', return_value='http://imgur.com/MOCK_RESULT')
     def test_imgur_redirect(self, mock_upload):
         response = self.app.get('success/uploaded/to_imgur.jpg?host=imgur')
         self.assertEqual(301, response.status_code)
         self.assertEqual('http://imgur.com/MOCK_RESULT', response.location)
 
-    @skip('Image generation does not work on Travis yet')
+    @skipIf(ON_TRAVIS, 'Image generation does not work on Travis yet')
     def test_good_image_response(self):
         response = self.app.get('success/made_an_assertion/tests_passed.jpg')
         self.assertEqual(200, response.status_code)
         self.assertEqual('image/jpeg', response.mimetype)
 
-    @skip('Image generation does not work on Travis yet')
+    @skipIf(ON_TRAVIS, 'Image generation does not work on Travis yet')
     def test_png_response(self):
         response = self.app.get('success/made_an_assertion/tests_passed.png')
         self.assertEqual(200, response.status_code)
         self.assertEqual('image/png', response.mimetype)
 
-    @skip('Image generation does not work on Travis yet')
+    @skipIf(ON_TRAVIS, 'Image generation does not work on Travis yet')
     def test_gif_response(self):
         response = self.app.get('success/made_an_assertion/tests_passed.gif')
         self.assertEqual(200, response.status_code)
