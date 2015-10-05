@@ -13,6 +13,10 @@ class ImgurException(Exception):
 
 def upload(image_path):
     """ Takes a file path, and returns it's URL on Imgur """
+    if CLIENT_ID == 'None':
+        raise ImgurException('client_id not specified in env')
+    if CLIENT_SECRET == 'None':
+        raise ImgurException('client_secret not specified in env')
     try:
         client = ImgurClient(CLIENT_ID, CLIENT_SECRET)
         imgur_response = client.upload_from_path(image_path)
