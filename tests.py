@@ -1,13 +1,14 @@
 import json
 import os
+from mock import patch
 from unittest import TestCase, skip, main
 
-from url import APP_ROOT, TEMPLATES_PATH
+from url import APP_ROOT, TEMPLATES_PATH, ERROR_BACKGROUND
 from url import replace_underscore
 from url import tokenize
 from url import guess_meme_image
 from url import parse_meme_url
-from url import meme_file_path
+from url import derive_meme_path
 from url import app
 
 
@@ -23,6 +24,9 @@ class FlaskTestCase(TestCase):
 
 
 class TestMemeTemplates(TestCase):
+
+    def test_error_background_exists(self):
+        self.assertIn(ERROR_BACKGROUND, MEMES.keys())
 
     def test_all_images_exist(self):
         for meme_name in MEMES.keys():
@@ -92,14 +96,14 @@ class TestMemeGuesser(TestCase):
 class TestMemeFilePath(TestCase):
 
     def test_hash(self):
-        path = meme_file_path('foo', 'bar', 'baz', 'jpg')
+        path = derive_meme_path('foo', 'bar', 'baz', 'jpg')
         self.assertTrue(path.endswith('04a4ab04fa79a4d325adc397d9b3e6bd.jpg'))
 
-        path = meme_file_path('foo', 'bar', 'baz', 'png')
+        path = derive_meme_path('foo', 'bar', 'baz', 'png')
         self.assertTrue(path.endswith('04a4ab04fa79a4d325adc397d9b3e6bd.png'))
 
     def test_emojis(self):
-        path = meme_file_path('success-kid', u'\xf0', u'\xf0', 'jpg')
+        path = derive_meme_path('success-kid', u'\xf0', u'\xf0', 'jpg')
         self.assertTrue(path.endswith('42025951d83a7977a4e5843c7c1d7e15.jpg'))
 
 
@@ -119,6 +123,13 @@ class TestMemeResponse(FlaskTestCase):
         }
         self.assertEqual(200, response.status_code)
         self.assertEqual(expected, json.loads(response.get_data(as_text=True)))
+
+    @skip('Image generation does not work on Travis yet')
+    @patch('imgur.upload', return_value='http://imgur.com/MOCK_RESULT')
+    def test_imgur_redirect(self, mock_upload):
+        response = self.app.get('success/uploaded/to_imgur.jpg?host=imgur')
+        self.assertEqual(301, response.status_code)
+        self.assertEqual('http://imgur.com/MOCK_RESULT', response.location)
 
     @skip('Image generation does not work on Travis yet')
     def test_good_image_response(self):

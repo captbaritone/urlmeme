@@ -3,8 +3,9 @@ import logging
 import json
 import os
 
-from flask import Flask, send_from_directory, send_file, render_template, request
+from flask import Flask, send_from_directory, send_file, render_template, request, redirect
 
+import imgur
 from memegenerator import gen_meme
 from ngram import NGram
 from hashlib import md5
@@ -15,6 +16,7 @@ MEME_PATH = os.path.join(APP_ROOT, 'static/memes/')
 TEMPLATES_PATH = os.path.join(APP_ROOT, 'templates/memes/')
 IMAGE_EXTENSIONS = ('png', 'jpeg', 'jpg', 'gif')
 SUPPORTED_EXTENSIONS = IMAGE_EXTENSIONS + ('json', 'log')
+ERROR_BACKGROUND = 'blank-colored-background'
 
 app = Flask(__name__)
 
@@ -71,7 +73,7 @@ def guess_meme_image(meme_name):
     return best
 
 
-def meme_file_path(meme_image, top, bottom, ext):
+def derive_meme_path(meme_image, top, bottom, ext):
     """ Generate a hash filename for this meme image """
 
     token = "%s|%s|%s" % (meme_image, top, bottom)
@@ -80,8 +82,8 @@ def meme_file_path(meme_image, top, bottom, ext):
     return MEME_PATH + file_path
 
 
-def meme_image_response(meme_image, top, bottom, ext):
-    file_path = meme_file_path(meme_image, top, bottom, ext)
+def meme_image_path(meme_image, top, bottom, ext):
+    file_path = derive_meme_path(meme_image, top, bottom, ext)
     try:
         open(file_path)
         app.logger.debug('file "%s" exists', file_path)
@@ -90,7 +92,13 @@ def meme_image_response(meme_image, top, bottom, ext):
         meme_path = os.path.join(TEMPLATES_PATH, meme_image)
         gen_meme(meme_path + '.jpg', top, bottom, file_path)
 
-    return send_file(file_path)
+    return file_path
+
+
+def error_image_response(top, bottom, status=500):
+    app.logger.error('Seding error response: %s, %s (%s)', top, bottom, status)
+    image_path = meme_image_path(ERROR_BACKGROUND, top, bottom, 'jpg')
+    return send_file(image_path), status
 
 
 @app.route("/")
@@ -115,7 +123,16 @@ def meme(path):
     elif ext == 'json':
         return json.dumps({'image': meme_image, 'top': top, 'bottom': bottom})
     elif ext in IMAGE_EXTENSIONS:
-        return meme_image_response(meme_image, top, bottom, ext)
+        image_path = meme_image_path(meme_image, top, bottom, ext)
+
+        host = request.args.get('host', None)
+        if host == 'imgur':
+            try:
+                return redirect(imgur.upload(image_path), code=301)
+            except imgur.ImgurException as e:
+                return error_image_response('Error Uploading to Imgur:', e.message)
+
+        return send_file(image_path)
 
 if __name__ == "__main__":
     handler = RotatingFileHandler(
