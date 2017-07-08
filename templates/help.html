@@ -1,175 +1,184 @@
 <html>
+
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
-<meta property="og:title" content="UrlMe.me" />
-<meta property="og:description" content="Make memes anywhere you can type a URL" />
-<meta property="og:type" content="website" />
-<meta property="og:url" content="http://urlme.me" />
-<meta property="og:image" content="http://urlme.me/success/typed_a_url/made_a_meme.jpg" />
-<link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
-<style>
-body {
-    max-width: 600px;
-    padding: 0;
-    margin: 0 auto;
-    font-family: "Helvetica Neue",Arial,Helvetica,sans-serif;
-    background: #222;
-    color: #FFF0D1;
-    text-align: center;
-}
-a {
-    color: #FF9966;
-    text-decoration: none;
-}
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+    <meta property="og:title" content="UrlMe.me" />
+    <meta property="og:description" content="Make memes anywhere you can type a URL" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="http://urlme.me" />
+    <meta property="og:image" content="http://urlme.me/success/typed_a_url/made_a_meme.jpg" />
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <style>
+        body {
+            max-width: 600px;
+            padding: 0;
+            margin: 0 auto;
+            font-family: "Helvetica Neue", Arial, Helvetica, sans-serif;
+            background: #222;
+            color: #FFF0D1;
+            text-align: center;
+        }
 
-h1 {
-    font-size: 20px;
-    margin: 10px 0;
-}
+        a {
+            color: #FF9966;
+            text-decoration: none;
+        }
 
-.dot {
-    color: #666;
-}
+        h1 {
+            font-size: 20px;
+            margin: 10px 0;
+        }
 
-.intro {
-    font-size: 20px;
-    font-size: 15px;
-    color: #FF9966;
-}
+        .dot {
+            color: #666;
+        }
 
-.intro p {
-    margin: 10px 0;
-}
+        .intro {
+            font-size: 20px;
+            font-size: 15px;
+            color: #FF9966;
+        }
 
-.demo {
-    border-radius: 8px;
-    background-color: #FFF0D1;
-    color: #20160A;
-    margin: 0 auto;
-    display: block;
-    border: 1px solid black;
-}
+        .intro p {
+            margin: 10px 0;
+        }
 
-.interaction {
-    padding: 10px 0;
-    font-size:0; /* Supress space between elements */
-    text-align: center;
-    line-height: 1.5em;
-    vertical-align: top;
-}
-.interaction .slash {
-    font-weight: bold;
-    font-family: Menlo,Monaco,Consolas,"Andale Mono","DejaVu Sans Mono",monospace;
-    display: inline-block;
-}
-.interaction input {
-    background-color: #fff;
-    border-color: -moz-use-text-color -moz-use-text-color #e2e2e2;
-    border-width: 1px;
-    color: #000;
-    margin: .5em .2em;
-    outline-style: none;
-    padding: .4em 0;
-    text-indent: 0.25em;
-    font-family: monospace;
-    width: 8em;
-    display: inline-block;
-}
+        .demo {
+            border-radius: 8px;
+            background-color: #FFF0D1;
+            color: #20160A;
+            margin: 0 auto;
+            display: block;
+            border: 1px solid black;
+        }
 
-.demo .meme {
-    background-repeat: no-repeat;
-    background-position: center center;
-    background-image: none;
-    /* Could put a loading gif here */
-}
+        .interaction {
+            padding: 10px 0;
+            font-size: 0;
+            /* Supress space between elements */
+            text-align: center;
+            line-height: 1.5em;
+            vertical-align: top;
+        }
 
-.demo .meme img {
-    width: 100%;
-    border-bottom-left-radius: 8px;
-    border-bottom-right-radius: 8px;
-    visibility: hidden;
-}
+        .interaction .slash {
+            font-weight: bold;
+            font-family: Menlo, Monaco, Consolas, "Andale Mono", "DejaVu Sans Mono", monospace;
+            display: inline-block;
+        }
 
-.demo .link-box {
-    display: none;
-}
+        .interaction input {
+            background-color: #fff;
+            border-color: -moz-use-text-color -moz-use-text-color #e2e2e2;
+            border-width: 1px;
+            color: #000;
+            margin: .5em .2em;
+            outline-style: none;
+            padding: .4em 0;
+            text-indent: 0.25em;
+            font-family: monospace;
+            width: 8em;
+            display: inline-block;
+        }
 
-.demo #link input { 
-    width: 80%;
-}
+        .demo .meme {
+            background-repeat: no-repeat;
+            background-position: center center;
+            background-image: none;
+            /* Could put a loading gif here */
+        }
 
-.interaction input,
-.url .slash,
-.hint {
-    font-size: 12px;
-}
+        .demo .meme img {
+            width: 100%;
+            border-bottom-left-radius: 8px;
+            border-bottom-right-radius: 8px;
+            visibility: hidden;
+        }
 
-.hint {
-    border-top-left-radius: 8px;
-    border-top-right-radius: 8px;
-    text-align: left;
-    padding: 10px 20px;
-    text-align: center;
-    position: relative;
-    background-color: #A1BAA1;
-}
+        .demo .link-box {
+            display: none;
+        }
 
-.demo .interaction .link-box input {
-    width: 80%;
-}
+        .demo #link input {
+            width: 80%;
+        }
 
-.interaction .icon {
-    cursor: pointer;
-    float: right;
-    background-size: 15px 15px;
-    background-position: center center;
-    background-repeat: no-repeat;
-    width: 15px;
-    height: 35px;
-    margin-right: 15px;
-}
-.url #copy {
-    background-image: url('/static/copy.svg');
-}
+        .interaction input,
+        .url .slash,
+        .hint {
+            font-size: 12px;
+        }
 
-.link-box #cancel-copy {
-    background-image: url('/static/close.svg');
-}
+        .hint {
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+            text-align: left;
+            padding: 10px 20px;
+            text-align: center;
+            position: relative;
+            background-color: #A1BAA1;
+        }
 
-.footer {
-    font-size: 14px;
-    text-align: center;
-    margin: 2em 0 5em 0;
-    margin: 1em 0 1em 0;
-}
+        .demo .interaction .link-box input {
+            width: 80%;
+        }
 
-@media (min-width: 480px) {
-    h1 {
-        margin-bottom: 0.15em;
-        margin-top: 0.75em;
-        font-weight: normal;
-        font-size: 40px;
-    }
-    .intro {
-        font-size: 20px;
-    }
+        .interaction .icon {
+            cursor: pointer;
+            float: right;
+            background-size: 15px 15px;
+            background-position: center center;
+            background-repeat: no-repeat;
+            width: 15px;
+            height: 35px;
+            margin-right: 15px;
+        }
 
-    .intro p {
-        margin: 20px 0;
-    }
-    .interaction {
-        margin: 20px auto;
-    }
-    .footer {
-        margin-bottom: 5em;
-    }
-}
-</style>
-<title>UrlMe.me - Make memes anywhere you can type a URL</title>
+        .url #copy {
+            background-image: url('/static/copy.svg');
+        }
+
+        .link-box #cancel-copy {
+            background-image: url('/static/close.svg');
+        }
+
+        .footer {
+            font-size: 14px;
+            text-align: center;
+            margin: 2em 0 5em 0;
+            margin: 1em 0 1em 0;
+        }
+
+        @media (min-width: 480px) {
+            h1 {
+                margin-bottom: 0.15em;
+                margin-top: 0.75em;
+                font-weight: normal;
+                font-size: 40px;
+            }
+            .intro {
+                font-size: 20px;
+            }
+
+            .intro p {
+                margin: 20px 0;
+            }
+            .interaction {
+                margin: 20px auto;
+            }
+            .footer {
+                margin-bottom: 5em;
+            }
+        }
+    </style>
+    <title>UrlMe.me - Make memes anywhere you can type a URL</title>
 </head>
+
 <body>
     <h1>UrlMe<span class='dot'>.</span>me</h1>
-    <div class='intro'><p>Make memes anywhere you can type a URL</p></div>
+    <div class='intro'>
+        <p>Make memes anywhere you can type a URL</p>
+    </div>
     <div class='demo'>
         <div class='hint'>
             <span id='hint'></span>
@@ -195,7 +204,8 @@ h1 {
         </div>
     </div>
     <div class='footer'>
-        <p>by <a href='https://jordaneldredge.com/'>Jordan Eldredge</a> (<a href='https://twitter.com/captbaritone'>@captbaritone</a>) &bull; <a href='https://github.com/captbaritone/urlmeme'>GitHub</a></p>
+        <p>by <a href='https://jordaneldredge.com/'>Jordan Eldredge</a> (<a href='https://twitter.com/captbaritone'>@captbaritone</a>)
+            &bull; <a href='https://github.com/captbaritone/urlmeme'>GitHub</a></p>
     </div>
     <script>
         function debounce(fn, delay) {
@@ -208,7 +218,7 @@ h1 {
                 }, delay);
             };
         }
-        var fields = ['name', 'top', 'bottom'].map(function(item) {
+        var fields = ['name', 'top', 'bottom'].map(function (item) {
             return document.getElementById(item);
         });
         var img = document.getElementById('img');
@@ -219,33 +229,32 @@ h1 {
         var linkBox = document.getElementById('link-box');
         var url = document.getElementById('url');
 
-        img.onload = function(e) {
+        img.onload = function (e) {
             img.style.visibility = 'visible';
         }
 
         function memeUrl() {
-            var dirs = [];
-            fields.forEach(function(item) {
+            var dirs = fields.map(function (item) {
                 var value = item.value || '_';
-                dirs.push(encodeURIComponent(value));
+                return encodeURIComponent(value);
             });
             return '{{ base_url }}' + dirs.join('/') + '.jpg';
         }
 
-        var updateMeme = debounce(function() {
+        var updateMeme = debounce(function () {
             img.style.visibility = 'hidden';
             img.src = memeUrl();
         }, 1000);
 
-        var processChange = function() {
-            fields.forEach(function(item) {
-                item.value = item.value.replace(/ /g,"_");
+        var processChange = function () {
+            fields.forEach(function (item) {
+                item.value = item.value.replace(/ /g, "_");
             });
             link.value = memeUrl();
             updateMeme();
         }
 
-        var setDefaultHint = function() {
+        var setDefaultHint = function () {
             hint.innerHTML = '<strong>Give it a try below!</strong>';
         }
         var cancelCopy = function () {
@@ -267,11 +276,11 @@ h1 {
         processChange();
         setDefaultHint();
 
-        fields.forEach(function(item) {
-            item.addEventListener('input', function() { processChange(); });
-            item.addEventListener('focus', function(e) {
+        fields.forEach(function (item) {
+            item.addEventListener('input', function () { processChange(); });
+            item.addEventListener('focus', function (e) {
                 var hintText = false;
-                switch(e.target.id) {
+                switch (e.target.id) {
                     case 'name':
                         hintText = '<strong>Meme name:</strong> A search string that you might type into Google to find this meme.';
                         break;
@@ -289,13 +298,15 @@ h1 {
         });
     </script>
     <script>
-    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-    ga('create', 'UA-96948-18', 'auto');
-    ga('send', 'pageview');
+        (function (i, s, o, g, r, a, m) {
+            i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
+                (i[r].q = i[r].q || []).push(arguments)
+            }, i[r].l = 1 * new Date(); a = s.createElement(o),
+                m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+        })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+        ga('create', 'UA-96948-18', 'auto');
+        ga('send', 'pageview');
     </script>
 </body>
-</html>
 
+</html>
