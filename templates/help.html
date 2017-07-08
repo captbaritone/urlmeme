@@ -215,6 +215,7 @@ h1 {
         var link = document.getElementById('link');
         var hint = document.getElementById('hint');
         var copy = document.getElementById('copy');
+        var cancel = document.getElementById('cancel-copy');
         var linkBox = document.getElementById('link-box');
         var url = document.getElementById('url');
 
@@ -247,18 +248,21 @@ h1 {
         var setDefaultHint = function() {
             hint.innerHTML = '<strong>Give it a try below!</strong>';
         }
-        copy.onclick = function(e) {
+        var cancelCopy = function () {
+            linkBox.style.display = "none";
+            url.style.display = "block";
+            setDefaultHint();
+        }
+        copy.addEventListener('click', function (e) {
             linkBox.style.display = "block";
             url.style.display = "none";
             hint.innerHTML = "<strong>Copy!</strong>";
             link.setSelectionRange(0, 9999);
-            link.onblur = function() {
-                linkBox.style.display = "none";
-                url.style.display = "block";
-                setDefaultHint();
-            }
+            link.onblur = cancelCopy;
             e.preventDefault();
-        };
+        });
+
+        cancel.addEventListener('click', cancelCopy);
 
         processChange();
         setDefaultHint();
