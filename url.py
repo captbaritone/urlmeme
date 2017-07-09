@@ -23,7 +23,7 @@ ERROR_BACKGROUND = 'blank-colored-background'
 app = Flask(__name__)
 
 # Logging
-handler = RotatingFileHandler('urlmeme.log', maxBytes=10000, backupCount=1)
+handler = RotatingFileHandler(os.path.join(APP_ROOT, 'urlmeme.log'), maxBytes=10000, backupCount=1)
 handler.setFormatter(Formatter('%(asctime)s %(levelname)s: %(message)s'))
 handler.setLevel(logging.INFO)
 app.logger.setLevel(logging.INFO)
