@@ -171,6 +171,7 @@
             }
         }
     </style>
+    <link rel="stylesheet" href="static/css/hint.css">
     <title>UrlMe.me - Make memes anywhere you can type a URL</title>
 </head>
 
@@ -192,11 +193,11 @@
                 <span class='slash'>/</span>
                 <input placeholder='Bottom Text' id='bottom' value='made_a_meme'>
                 <span class='slash'>.jpg</span>
-                <a id='copy' class='icon'></a>
+                <a id='copy' class='icon hint--left hint--rounded' data-clipboard-target="#link" aria-label='Copy to clipboard'></a>
             </div>
             <div class='link-box' id='link-box'>
                 <input id='link'>
-                <a id='cancel-copy' class='icon'></a>
+                <a id='cancel-copy' class='icon hint--left hint-rounded' aria-label='Copied!'></a>
             </div>
         </div>
         <div class='meme'>
@@ -207,7 +208,9 @@
         <p>by <a href='https://jordaneldredge.com/'>Jordan Eldredge</a> (<a href='https://twitter.com/captbaritone'>@captbaritone</a>)
             &bull; <a href='https://github.com/captbaritone/urlmeme'>GitHub</a></p>
     </div>
+    <script src="static/js/clipboard.js"></script>
     <script>
+        var clipboard = new Clipboard('#copy');
         function debounce(fn, delay) {
             var timer = null;
             return function () {
@@ -288,7 +291,7 @@
                         hintText = '<strong>Top Text:</strong> The text at the top of your image. Use _ instead of space.';
                         break;
                     case 'bottom':
-                        hintText = '<strong>Bottom Text:</strong> The text at the top of your image. Use _ instead of space.';
+                        hintText = '<strong>Bottom Text:</strong> The text at the bottom of your image. Use _ instead of space.';
                         break;
                 }
                 hint.innerHTML = hintText;
