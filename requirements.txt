@@ -1,5 +1,5 @@
-ngram
 Flask
 Pillow
 imgurpython
 mock
+fuzzywuzzy

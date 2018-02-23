@@ -5,7 +5,7 @@ import logging
 
 from logging.handlers import RotatingFileHandler
 from logging import Formatter
-from ngram import NGram
+from fuzzywuzzy import fuzz
 from hashlib import md5
 
 from flask import Flask, send_from_directory, send_file, render_template, request, redirect
@@ -23,7 +23,8 @@ ERROR_BACKGROUND = 'blank-colored-background'
 app = Flask(__name__)
 
 # Logging
-handler = RotatingFileHandler(os.path.join(APP_ROOT, 'urlmeme.log'), maxBytes=10000, backupCount=1)
+handler = RotatingFileHandler(os.path.join(
+    APP_ROOT, 'urlmeme.log'), maxBytes=10000, backupCount=1)
 handler.setFormatter(Formatter('%(asctime)s %(levelname)s: %(message)s'))
 handler.setLevel(logging.INFO)
 app.logger.setLevel(logging.INFO)
@@ -73,12 +74,14 @@ def guess_meme_image(meme_name):
     for guess_image, names in MEMES.items():
         for guess in names:
             guess = tokenize(guess)
-            score = NGram.compare(guess, meme_name)
+            score = fuzz.partial_ratio(guess, meme_name)
             if best_score is None or score > best_score:
                 best_score = score
                 best = guess_image
-                app.logger.debug('New best meme for "%s": "%s" (Score: %s)', meme_name, guess, score)
-    app.logger.info('Picked meme "%s" for name "%s" (Score: %s)', best, meme_name, best_score)
+                app.logger.debug(
+                    'New best meme for "%s": "%s" (Score: %s)', meme_name, guess, score)
+    app.logger.info('Picked meme "%s" for name "%s" (Score: %s)',
+                    best, meme_name, best_score)
     return best
 
 
@@ -106,7 +109,8 @@ def meme_image_path(meme_image, top, bottom, ext):
 
 
 def error_image_response(top, bottom, status=500):
-    app.logger.error('Sending error response: %s, %s (%s)', top, bottom, status)
+    app.logger.error('Sending error response: %s, %s (%s)',
+                     top, bottom, status)
     image_path = meme_image_path(ERROR_BACKGROUND, top, bottom, 'jpg')
     return send_file(image_path), status
 
@@ -129,7 +133,8 @@ def meme(path):
     meme_name, top, bottom, ext = parse_meme_url(path)
     meme_image = guess_meme_image(meme_name)
 
-    app.logger.info('Meme: "%s" / "%s" / "%s" . "%s"', meme_image, top, bottom, ext)
+    app.logger.info('Meme: "%s" / "%s" / "%s" . "%s"',
+                    meme_image, top, bottom, ext)
     if ext == 'json':
         app.logger.info('Serving JSON')
         return json.dumps({'image': meme_image, 'top': top, 'bottom': bottom})
@@ -140,7 +145,8 @@ def meme(path):
         if host == 'imgur':
             try:
                 imgur_url = imgur.upload(image_path)
-                app.logger.info('Uploaded: "%s" as "%s"', image_path, imgur_url)
+                app.logger.info('Uploaded: "%s" as "%s"',
+                                image_path, imgur_url)
                 app.logger.info('Redirecting to: "%s"', imgur_url)
                 return redirect(imgur_url, code=301)
             except imgur.ImgurException as e:
@@ -148,6 +154,7 @@ def meme(path):
 
         app.logger.info('Serving: "%s"', image_path)
         return send_file(image_path)
+
 
 if __name__ == "__main__":
     """ Only runs in dev """
