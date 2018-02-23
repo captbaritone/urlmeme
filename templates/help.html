@@ -81,18 +81,28 @@
             display: inline-block;
         }
 
-        .demo .meme {
+        .demo #meme {
             background-repeat: no-repeat;
             background-position: center center;
             background-image: none;
             /* Could put a loading gif here */
+            transition: all .25s linear;
+            overflow: hidden;
+            height: 0;
         }
 
-        .demo .meme img {
+        .demo #meme img.stale {
+            opacity: .5;
+        }
+
+        .demo #meme img {
+            -webkit-transition: opacity .25s ease-in-out;
+            -moz-transition: opacity .25s ease-in-out;
+            -o-transition: opacity .25s ease-in-out;
+            transition: opacity .25s ease-in-out;
+
             width: 100%;
-            border-bottom-left-radius: 8px;
-            border-bottom-right-radius: 8px;
-            visibility: hidden;
+            height: 100%;
         }
 
         .demo .link-box {
@@ -210,10 +220,10 @@
                 <a id='cancel-copy' class='icon hint--left hint-rounded' aria-label='Copied!'></a>
             </div>
         </div>
-        <div class='meme'>
+        <div id='meme'>
             <img src='' id='img' />
-            <div id='missing'><a id='missing-link' href="mailto:jordan@jordaneldredge.com">Can't find the image you're looking for?</a></div>
         </div>
+        <div id='missing'><a id='missing-link' href="mailto:jordan@jordaneldredge.com">Can't find the image you're looking for?</a></div>
     </div>
     <div class='footer'>
         <p>by <a href='https://jordaneldredge.com/'>Jordan Eldredge</a> (<a href='https://twitter.com/captbaritone'>@captbaritone</a>)
@@ -230,6 +240,9 @@
                 timer = setTimeout(function () {
                     fn.apply(context, args);
                 }, delay);
+                return function() {
+                    clearTimeout(timer);
+                }
             };
         }
         var fields = ['name', 'top', 'bottom'].map(function (item) {
@@ -243,10 +256,8 @@
         var linkBox = document.getElementById('link-box');
         var url = document.getElementById('url');
         var missingLink = document.getElementById('missing-link');
-
-        img.onload = function (e) {
-            img.style.visibility = 'visible';
-        }
+        var meme = document.getElementById('meme');
+        var cancelPending = null;
 
         function memeUrl() {
             var dirs = fields.map(function (item) {
@@ -266,18 +277,39 @@
                 "subject=" + subject + "&body=" + body;
         }
 
-        var updateMeme = debounce(function () {
-            img.style.visibility = 'hidden';
-            img.src = memeUrl();
-        }, 1000);
+        function _updateMeme() {
+            var newImg = document.createElement('img');
+            newImg.classList.add('stale');
+            newImg.onload = function (e) {
+                var memeWidth = meme.offsetWidth;
+                var imgRatio = newImg.height / newImg.width;
+                var newMemeHeight = memeWidth * imgRatio;
+                meme.style.height = newMemeHeight + "px";
+                meme.replaceChild(newImg, img);
+                img = newImg;
+                setTimeout(function() {
+                    newImg.classList.remove('stale');
+                }, 0);
+            }
+            newImg.src = memeUrl();
+        }
+        var updateMeme = debounce(_updateMeme, 500);
 
-        var processChange = function () {
+        var processChange = function (fast) {
+            img.classList.add('stale');
             fields.forEach(function (item) {
                 item.value = item.value.replace(/ /g, "_");
             });
             link.value = memeUrl();
             missingLink.setAttribute('href', missingLinkHref());
-            updateMeme();
+            if(cancelPending) {
+                cancelPending();
+            }
+            if(fast) {
+                _updateMeme();
+            } else {
+                cancelPending = updateMeme();
+            }
         }
 
         var setDefaultHint = function () {
@@ -299,7 +331,7 @@
 
         cancel.addEventListener('click', cancelCopy);
 
-        processChange();
+        processChange(true);
         setDefaultHint();
 
         fields.forEach(function (item) {
