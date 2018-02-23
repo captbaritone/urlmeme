@@ -1,6 +1,4 @@
 import os
-from imgurpython import ImgurClient
-from imgurpython.helpers.error import ImgurClientError
 
 CLIENT_ID = str(os.environ.get("IMGUR_CLIENT_ID"))
 CLIENT_SECRET = str(os.environ.get("IMGUR_CLIENT_SECRET"))
@@ -12,6 +10,8 @@ class ImgurException(Exception):
 
 
 def upload(image_path):
+    from imgurpython import ImgurClient
+    from imgurpython.helpers.error import ImgurClientError
     """ Takes a file path, and returns it's URL on Imgur """
     if CLIENT_ID == 'None':
         raise ImgurException('client_id not specified in env')
