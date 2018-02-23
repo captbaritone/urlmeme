@@ -11,4 +11,7 @@ git pull
 echo "Restarting Apache..."
 sudo service apache2 restart
 
+echo "Clearing cache..."
+rm static/memes/*
+
 echo "Done!"
