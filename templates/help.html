@@ -103,6 +103,12 @@
             width: 80%;
         }
 
+        .demo a {
+            color: black;
+            text-decoration: underline;
+            font-size: 12px;
+        }
+
         .interaction input,
         .url .slash,
         .hint {
@@ -140,6 +146,10 @@
 
         .link-box #cancel-copy {
             background-image: url('/static/close.svg');
+        }
+
+        #missing {
+            padding: 1em 0;
         }
 
         .footer {
@@ -202,6 +212,7 @@
         </div>
         <div class='meme'>
             <img src='' id='img' />
+            <div id='missing'><a id='missing-link' href="mailto:jordan@jordaneldredge.com">Can't find the image you're looking for?</a></div>
         </div>
     </div>
     <div class='footer'>
@@ -231,6 +242,7 @@
         var cancel = document.getElementById('cancel-copy');
         var linkBox = document.getElementById('link-box');
         var url = document.getElementById('url');
+        var missingLink = document.getElementById('missing-link');
 
         img.onload = function (e) {
             img.style.visibility = 'visible';
@@ -244,6 +256,16 @@
             return '{{ base_url }}' + dirs.join('/') + '.jpg';
         }
 
+        function missingLinkHref() {
+            var subject = encodeURIComponent("Missing Meme Image");
+            var body = encodeURIComponent("I typed '" + fields[0].value + "'" +
+                " and expected to get:\n\n" +
+                "[[PLEASE ATTACH THE IMAGE YOU EXPECTED TO GET]]." +
+                "\n\nThanks!");
+            return "mailto:jordan@jordaneldredge.com?" +
+                "subject=" + subject + "&body=" + body;
+        }
+
         var updateMeme = debounce(function () {
             img.style.visibility = 'hidden';
             img.src = memeUrl();
@@ -254,6 +276,7 @@
                 item.value = item.value.replace(/ /g, "_");
             });
             link.value = memeUrl();
+            missingLink.setAttribute('href', missingLinkHref());
             updateMeme();
         }
 
