@@ -9,7 +9,7 @@ A meme generator where the URL is the user interface.
 # How?
 
 I keep a list of meme images which I think make the cut in `memes.json`. I then
-use [N-gram](https://en.wikipedia.org/wiki/N-gram) comparison to find the
+use [fuzzywuzzy](https://github.com/seatgeek/fuzzywuzzy) comparison to find the
 closes meme to the image you specified.
 
 # Ussage
