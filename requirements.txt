@@ -3,3 +3,4 @@ Pillow
 imgurpython
 mock
 fuzzywuzzy
+python-Levenshtein

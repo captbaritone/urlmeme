@@ -74,7 +74,11 @@ def guess_meme_image(meme_name):
     for guess_image, names in MEMES.items():
         for guess in names:
             guess = tokenize(guess)
-            score = fuzz.partial_ratio(guess, meme_name)
+            if(meme_name == guess):
+                score = 100
+            else:
+                # Add spaces to prefer matches that have word boundaries
+                score = fuzz.partial_ratio(guess, " " + meme_name + " ")
             if best_score is None or score > best_score:
                 best_score = score
                 best = guess_image

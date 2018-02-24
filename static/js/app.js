@@ -15,11 +15,10 @@ var meme = document.getElementById('meme');
 var cancelPending = null;
 
 function memeUrl() {
-    var dirs = fields.map(function (item) {
+    return fields.map(function (item) {
         var value = item.value || '_';
         return encodeURIComponent(value);
-    });
-    return '{{ base_url }}' + dirs.join('/') + '.jpg';
+    }).join('/') + '.jpg';
 }
 
 function missingLinkHref() {
@@ -82,7 +81,7 @@ function handleChange() {
     fields.forEach(function (item) {
         item.value = item.value.replace(/ /g, "_");
     });
-    link.value = memeUrl();
+    link.value = baseUrl + memeUrl();
     missingLink.setAttribute('href', missingLinkHref());
 }
 
@@ -124,4 +123,9 @@ Rx.Observable.merge(
     .subscribe(replaceMemeImg);
 
 handleChange();
-getLoadedMemeImg().subscribe(replaceMemeImg);
+getLoadedMemeImg().subscribe(function (newImg) {
+    replaceMemeImg(newImg);
+    setTimeout(function () {
+        meme.classList.remove('cold')
+    }, 0)
+});
