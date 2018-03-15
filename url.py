@@ -101,10 +101,9 @@ def derive_meme_path(meme_image, top, bottom, ext):
 def meme_image_path(meme_image, top, bottom, ext):
     file_path = derive_meme_path(meme_image, top, bottom, ext)
     app.logger.debug('Looking for file: "%s"', file_path)
-    try:
-        open(file_path)
+    if os.path.exists(file_path):
         app.logger.info('Found meme in cache: "%s"', file_path)
-    except IOError:
+    else:
         app.logger.info('Generating "%s"', file_path)
         meme_path = os.path.join(TEMPLATES_PATH, meme_image)
         gen_meme(meme_path + '.jpg', top, bottom, file_path)
