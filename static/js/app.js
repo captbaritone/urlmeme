@@ -14,6 +14,9 @@ var missingLink = document.getElementById('missing-link');
 var meme = document.getElementById('meme');
 var cancelPending = null;
 
+fields[0].focus();
+fields[0].select();
+
 function memeUrl() {
     return fields.map(function (item) {
         var value = item.value || '_';
