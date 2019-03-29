@@ -1,0 +1,25 @@
+<!doctype html>
+<title>Recents</title>
+<nav>
+  <h1>Recents</h1>
+</nav>
+<table>
+    <tr>
+        <th>Image</th>
+        <th>Query</th>
+        <th>Canonical</th>
+    </tr>
+  {% for recent in recents %}
+    <tr>
+        <td>
+            <img src="/{{ recent.route }}" style="width: 200px" />
+        </td>
+        <td>
+            <strong>"{{ recent.meme_query }}"</strong>
+        </td>
+        <td>
+            {{ recent.meme_image }}
+        </td>
+    </tr>
+  {% endfor %}
+</table>

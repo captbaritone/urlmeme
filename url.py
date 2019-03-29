@@ -9,7 +9,7 @@ from logging import Formatter
 from fuzzywuzzy import fuzz
 from hashlib import md5
 
-from flask import Flask, jsonify, send_from_directory, send_file, render_template, request, redirect
+from flask import Flask, jsonify, send_from_directory, send_file, render_template, request, redirect, make_response
 
 import imgur
 from memegenerator import gen_meme
@@ -154,6 +154,19 @@ def favicon():
     path = os.path.join(app.root_path, 'static')
     mimetype = 'image/vnd.microsoft.icon'
     return send_from_directory(path, 'favicon.ico', mimetype=mimetype)
+
+
+# TODO: Add some kind of real security
+@app.route('/%s/recent' % os.environ.get('ADMIN_SECRET'))
+def recent():
+    if not os.environ.get('ADMIN_SECRET'):
+        return make_response(jsonify({"reason": "Server misconfigured"}), 500)
+    recents = []
+    for filename in os.listdir(MEME_PATH):
+        if filename.endswith(".json"):
+            with open(os.path.join(MEME_PATH, filename), 'r') as f:
+                recents.append(json.load(f))
+    return render_template('recent.html', recents=recents[0:100])
 
 
 @app.route('/<path:path>')
