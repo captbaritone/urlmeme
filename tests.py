@@ -115,6 +115,18 @@ class TestMemeResponse(FlaskTestCase):
         response = self.app.get('success/made_an_assertion/tests_passed.json')
         expected = {
             u'image': u'success-kid',
+            u'custom': False,
+            u'top': u'made an assertion',
+            u'bottom': u'tests passed'
+        }
+        self.assertEqual(200, response.status_code)
+        self.assertEqual(expected, json.loads(response.get_data(as_text=True)))
+
+    def test_meme_json_for_custom_image(self):
+        response = self.app.get('uploaded:061bf61575b3671a6e8dafa735911c62/made_an_assertion/tests_passed.json')
+        expected = {
+            u'image': u'uploaded:061bf61575b3671a6e8dafa735911c62',
+            u'custom': True,
             u'top': u'made an assertion',
             u'bottom': u'tests passed'
         }
