@@ -86,7 +86,7 @@ function setMemeHeight(newImg) {
 function getLoadedMemeImg() {
     var newImg = document.createElement('img');
     newImg.classList.add('stale');
-    newImg.src = memeUrl();
+    newImg.src = memeUrl() + "?source=www";
     return Rx.Observable.fromEvent(newImg, 'load').mapTo(newImg);
 }
 

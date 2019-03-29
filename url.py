@@ -173,6 +173,18 @@ def meme(path):
     elif ext in IMAGE_EXTENSIONS:
         image_path = meme_image_path(meme_image, top, bottom, ext)
 
+        json_path = derive_meme_path(meme_name, top, bottom, 'json')
+        with open(json_path, 'w') as f:  
+            json.dump({
+                "source": request.args.get('source'),
+                "meme_image": meme_image,
+                "meme_query": meme_name,
+                "route": path,
+                "top": top,
+                "bottom": bottom,
+                "ext": ext
+            }, f, indent=2)
+
         host = request.args.get('host', None)
         if host == 'imgur':
             try:
