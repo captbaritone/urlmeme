@@ -2,13 +2,14 @@ import re
 import json
 import os
 import logging
+import time
 
 from logging.handlers import RotatingFileHandler
 from logging import Formatter
 from fuzzywuzzy import fuzz
 from hashlib import md5
 
-from flask import Flask, send_from_directory, send_file, render_template, request, redirect
+from flask import Flask, jsonify, send_from_directory, send_file, render_template, request, redirect
 
 import imgur
 from memegenerator import gen_meme
@@ -20,7 +21,13 @@ IMAGE_EXTENSIONS = ('png', 'jpeg', 'jpg', 'gif')
 SUPPORTED_EXTENSIONS = IMAGE_EXTENSIONS + ('json',)
 ERROR_BACKGROUND = 'blank-colored-background'
 
+UPLOAD_FOLDER = os.path.join(APP_ROOT, 'user_uploads/')
+ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
+
 app = Flask(__name__)
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+# Limit uploads to 2mb. This limit is also enforced in the client
+app.config['MAX_CONTENT_LENGTH'] = 2 * 1024 * 1024
 
 # Logging
 handler = RotatingFileHandler(os.path.join(
@@ -34,6 +41,25 @@ app.logger.addHandler(handler)
 with open(os.path.join(APP_ROOT, 'memes.json')) as data_file:
     MEMES = json.load(data_file)
 
+def get_hash_from_custom_image(meme_name):
+    m = re.match(r"^uploaded:([a-f0-9]{32})$", meme_name)
+    return m and m.groups()[0]
+
+def is_custom_image(meme_name):
+    return get_hash_from_custom_image(meme_name) is not None
+
+def get_template_path(meme_name):
+    if(is_custom_image(meme_name)):
+        hash = get_hash_from_custom_image(meme_name)
+        return os.path.join(UPLOAD_FOLDER, hash)
+
+    return os.path.join(TEMPLATES_PATH, meme_name)
+
+def get_ext(filename):
+    return "." in filename and filename.rsplit('.', 1)[1].lower()
+
+def allowed_file(filename):
+    return get_ext(filename) in ALLOWED_EXTENSIONS
 
 def replace_underscore(string):
     return re.sub(r'_', ' ', string)
@@ -105,7 +131,7 @@ def meme_image_path(meme_image, top, bottom, ext):
         app.logger.info('Found meme in cache: "%s"', file_path)
     else:
         app.logger.info('Generating "%s"', file_path)
-        meme_path = os.path.join(TEMPLATES_PATH, meme_image)
+        meme_path = get_template_path(meme_image)
         gen_meme(meme_path + '.jpg', top, bottom, file_path)
 
     return file_path
@@ -134,13 +160,16 @@ def favicon():
 def meme(path):
     app.logger.info('New request for meme: "%s"', path)
     meme_name, top, bottom, ext = parse_meme_url(path)
-    meme_image = guess_meme_image(meme_name)
+    if is_custom_image(meme_name):
+        meme_image = meme_name
+    else:
+        meme_image = guess_meme_image(meme_name)
 
     app.logger.info('Meme: "%s" / "%s" / "%s" . "%s"',
                     meme_image, top, bottom, ext)
     if ext == 'json':
         app.logger.info('Serving JSON')
-        return json.dumps({'image': meme_image, 'top': top, 'bottom': bottom})
+        return json.dumps({'image': meme_image, 'top': top, 'bottom': bottom, 'custom': is_custom_image(meme_name)})
     elif ext in IMAGE_EXTENSIONS:
         image_path = meme_image_path(meme_image, top, bottom, ext)
 
@@ -158,6 +187,34 @@ def meme(path):
         app.logger.info('Serving: "%s"', image_path)
         return send_file(image_path)
 
+
+@app.route('/upload', methods=['POST'])
+def upload_file():
+    if 'file' not in request.files:
+        app.logger.error('No selected file')
+        return make_response(jsonify({"reason": "No selected file"}), 400)
+    file = request.files['file']
+    if file.filename == '':
+        app.logger.error('No selected filename')
+        return make_response(jsonify({"reason": "Missing a filename"}), 400)
+    if file and allowed_file(file.filename):
+        ext = get_ext(file.filename)
+        hash = md5(file.stream.read()).hexdigest()
+        file.seek(0)
+        meme_name = "uploaded:%s" % hash
+        filepath = "%s.%s" % (get_template_path(meme_name), "jpg")
+        file.save(filepath)
+        image_info = {
+            "meme_name": meme_name,
+            "filename": file.filename,
+            "md5": hash,
+            "upload_time": time.time(),
+            "ip": request.remote_addr
+        }
+        metadata_path = os.path.join(UPLOAD_FOLDER, "%s.json" % hash)
+        with open(metadata_path, 'w') as f:  
+            json.dump(image_info, f, indent=2)
+        return jsonify(image_info)
 
 if __name__ == "__main__":
     """ Only runs in dev """

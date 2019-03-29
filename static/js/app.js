@@ -10,8 +10,8 @@ var copy = document.getElementById('copy');
 var cancel = document.getElementById('cancel-copy');
 var linkBox = document.getElementById('link-box');
 var url = document.getElementById('url');
-var missingLink = document.getElementById('missing-link');
 var meme = document.getElementById('meme');
+var missing = document.getElementById('missing');
 var cancelPending = null;
 
 fields[0].focus();
@@ -23,17 +23,6 @@ function memeUrl() {
         return encodeURIComponent(value);
     }).join('/') + '.jpg';
 }
-
-function missingLinkHref() {
-    var subject = encodeURIComponent("Missing Meme Image");
-    var body = encodeURIComponent("I typed '" + fields[0].value + "'" +
-        " and expected to get:\n\n" +
-        "[[PLEASE ATTACH THE IMAGE YOU EXPECTED TO GET]]." +
-        "\n\nThanks!");
-    return "mailto:jordan@jordaneldredge.com?" +
-        "subject=" + subject + "&body=" + body;
-}
-
 
 var setDefaultHint = function () {
     hint.innerHTML = '<strong>Give it a try below!</strong>';
@@ -85,7 +74,6 @@ function handleChange() {
         item.value = item.value.replace(/ /g, "_");
     });
     link.value = baseUrl + memeUrl();
-    missingLink.setAttribute('href', missingLinkHref());
 }
 
 function setMemeHeight(newImg) {
@@ -111,7 +99,10 @@ function replaceMemeImg(newImg) {
     }, 0);
 }
 
+const uploadCompetions = new Rx.Subject();
+
 Rx.Observable.merge(
+    uploadCompetions,
     Rx.Observable.fromEvent(fields[0], 'input'),
     Rx.Observable.fromEvent(fields[1], 'input'),
     Rx.Observable.fromEvent(fields[2], 'input')
@@ -132,3 +123,122 @@ getLoadedMemeImg().subscribe(function (newImg) {
         meme.classList.remove('cold')
     }, 0)
 });
+
+function uploadFile(file) {
+	// Allowed types
+	var mime_types = [ 'image/jpeg', 'image/png' ];
+	
+	// Validate MIME type
+	if(mime_types.indexOf(file.type) == -1) {
+		alert('Error: Incorrect file type');
+		return;
+	}
+
+	// Max 2 Mb allowed. This limit is also enforced on the server
+	if(file.size > 2*1024*1024) {
+		// alert('Error : Exceeded size 2MB');
+		// return;
+	}
+
+	// Validation is successful
+	// This is the name of the file
+    // alert('You have chosen the file ' + file.name);
+    var data = new FormData();
+
+    var request = new XMLHttpRequest();
+
+    // File selected by the user
+    // In case of multiple files append each of them
+    data.append('file', file);
+
+    function done() {
+        missing.style.background = 'none';
+    }
+
+    // AJAX request finished
+    request.addEventListener('load', function(e) {
+        done();
+        if(request.status === 413) { 
+            alert("Error uploading image: File too large")
+            return;
+        } else if(request.status !== 200) { 
+            alert("Error uploading image")
+            return;
+        }
+        // request.response will hold the response from the server
+        fields[0].value = request.response.meme_name;
+        uploadCompetions.next();
+    });
+
+    request.addEventListener('error', function(e) {
+        done();
+        alert("Error: Could not upload image")
+    })
+
+    const start = Date.now();
+
+    // Upload progress on request.upload
+    request.upload.addEventListener('progress', function(e) {
+        var percent_complete = (e.loaded / e.total)*100;
+        // If we're on a fast connection, don't bother showing the loading
+        if(Date.now() - start > 400) {
+            missing.style.background = "linear-gradient(to right, #A1BAA1 " + percent_complete + "%, transparent 0)";
+        }
+    });
+
+    // If server is sending a JSON response then set JSON response type
+    request.responseType = 'json';
+
+    // Send POST request to the server side script
+    request.open('post', '/upload'); 
+    request.send(data);
+}
+
+const upload = document.getElementById('upload')
+const uploadButton = document.getElementById('upload-button')
+uploadButton.addEventListener('click', function() {
+    upload.click();
+})
+upload.addEventListener('change', function() {
+	// This is the file user has chosen
+	uploadFile(this.files[0]);
+});
+
+let dropArea = document.body;
+
+  
+function preventDefaults(e) {
+    e.preventDefault()
+    e.stopPropagation()
+}
+
+function highlight(e) {
+    missing.classList.add('dragging')
+}
+
+function unhighlight(e) {
+    missing.classList.remove('dragging')
+}
+
+function handleDrop(e) {
+  let dt = e.dataTransfer
+  let files = dt.files
+
+  uploadFile(files[0])
+}
+
+['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+    dropArea.addEventListener(eventName, preventDefaults, false)
+});
+
+['dragenter', 'dragover'].forEach(eventName => {
+    dropArea.addEventListener(eventName, highlight, false)
+});
+
+['dragleave', 'drop'].forEach(eventName => {
+    dropArea.addEventListener(eventName, unhighlight, false)
+});
+
+dropArea.addEventListener('drop', handleDrop, false)
+
+

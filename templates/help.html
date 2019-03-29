@@ -34,7 +34,7 @@
         }
 
         .intro {
-            font-size: 20px;
+            font-size: 10px;
             font-size: 15px;
             color: #FF9966;
         }
@@ -170,7 +170,15 @@
         }
 
         #missing {
+            font-size: 12px;
             padding: 1em 0;
+            margin: 4px;
+            border-radius: 8px;
+            border: 2px dashed black;
+        }
+
+        #missing.dragging {
+            background-color: rgba(0, 0, 0, 0.2);
         }
 
         .footer {
@@ -192,14 +200,21 @@
             }
 
             .intro p {
-                margin: 20px 0;
+                margin: 10px 0;
             }
             .interaction {
-                margin: 20px auto;
+                margin: 10px auto;
             }
             .footer {
                 margin-bottom: 5em;
             }
+        }
+        body.dragging {
+            border: 10px dotted white;
+        }
+
+        #upload {
+            display: none;
         }
     </style>
     <link rel="stylesheet" href="static/css/hint.css">
@@ -234,7 +249,10 @@
         <div id='meme' class='cold'>
             <img src='' id='img' />
         </div>
-        <div id='missing'><a id='missing-link' href="mailto:jordan@jordaneldredge.com">Can't find the image you're looking for?</a></div>
+        <div id='missing'>
+            <input type="file" accept="image/jpeg, image/png" id="upload" />
+            Image missing? <button id='upload-button'>Browse</button> or drag image here.
+        </div>
     </div>
     <div class='footer'>
         <p>by <a href='https://jordaneldredge.com/'>Jordan Eldredge</a> (<a href='https://twitter.com/captbaritone'>@captbaritone</a>)
