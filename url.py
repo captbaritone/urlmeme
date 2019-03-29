@@ -42,7 +42,7 @@ with open(os.path.join(APP_ROOT, 'memes.json')) as data_file:
     MEMES = json.load(data_file)
 
 def get_hash_from_custom_image(meme_name):
-    m = re.match(r"^uploaded:([a-f0-9]{32})$", meme_name)
+    m = re.match(r"^uploaded-([a-f0-9]{32})$", meme_name)
     return m and m.groups()[0]
 
 def is_custom_image(meme_name):
@@ -201,7 +201,7 @@ def upload_file():
         ext = get_ext(file.filename)
         hash = md5(file.stream.read()).hexdigest()
         file.seek(0)
-        meme_name = "uploaded:%s" % hash
+        meme_name = "uploaded-%s" % hash
         filepath = "%s.%s" % (get_template_path(meme_name), "jpg")
         file.save(filepath)
         image_info = {
