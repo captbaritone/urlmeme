@@ -223,8 +223,10 @@ function unhighlight(e) {
 function handleDrop(e) {
   let dt = e.dataTransfer
   let files = dt.files
-
-  uploadFile(files[0])
+  const file = files[0]
+  if(file != null) {
+    uploadFile(file)
+  }
 }
 
 ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
